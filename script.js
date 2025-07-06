@@ -58,6 +58,7 @@ async function sendMessage() {
   }
 }
 
+
 async function getGeminiResponse(query) {
   const prompt = `Anda adalah asisten AI untuk pelayanan desa...`;
 
@@ -98,3 +99,4 @@ document.querySelector('.logo').addEventListener('click', function () {
     clickCount = 0;
   }
 });
+
