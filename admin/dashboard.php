@@ -6,7 +6,7 @@ if (!isset($_SESSION['admin'])) {
 }
 ?>
 
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html>
 <head>
   <title>Dashboard Admin - Desa Maju Bersama</title>

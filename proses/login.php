@@ -10,9 +10,9 @@ $data = $query->fetch_assoc();
 
 if ($data && password_verify($password, $data['password'])) {
   $_SESSION['admin'] = $data['username'];
-  header("Location: ../admin/dashboard.php");
+  header("Location: C:\Users\ASUS\webdesa-cipancur\admin\dashboard.php");
 } else {
   $_SESSION['error'] = "Login gagal. Cek kembali username/password.";
-  header("Location: ../admin/login.php");
+  header("Location: C:\Users\ASUS\webdesa-cipancur\admin\login.php");
 }
 ?>
