@@ -1,18 +1,43 @@
 <?php
 session_start();
-include 'C:\xampppp\htdocs\webdesa-cipancur\config\db.php';
+include '../config/db.php';
 
-$username = $_POST['username'];
-$password = $_POST['password'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $username = trim($_POST['username'] ?? '');
+  $password = trim($_POST['password'] ?? '');
 
-$query = $conn->query("SELECT * FROM admin WHERE username = '$username'");
-$data = $query->fetch_assoc();
+  if ($username === '' || $password === '') {
+    $_SESSION['error'] = "Username dan password tidak boleh kosong.";
+    header("Location: ../admin/login.php");
+    exit;
+  }
 
-if ($data && password_verify($password, $data['password'])) {
-  $_SESSION['admin'] = $data['username'];
-  header("Location: C:\Users\ASUS\webdesa-cipancur\admin\dashboard.php");
+  // Ambil data admin
+  $stmt = $conn->prepare("SELECT id, nama, username, password FROM admin WHERE username = ?");
+  $stmt->bind_param("s", $username);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $admin = $result->fetch_assoc();
+  $stmt->close();
+
+  // Verifikasi password
+  if ($admin && password_verify($password, $admin['password'])) {
+    // Simpan ke session
+    $_SESSION['admin_id'] = $admin['id'];
+    $_SESSION['admin'] = [
+      'id' => $admin['id'],
+      'nama' => $admin['nama'],
+      'username' => $admin['username']
+    ];
+
+    header("Location: ../admin/dashboard.php");
+    exit;
+  } else {
+    $_SESSION['error'] = "Login gagal. Username atau password salah.";
+    header("Location: ../admin/login.php");
+    exit;
+  }
 } else {
-  $_SESSION['error'] = "Login gagal. Cek kembali username/password.";
-  header("Location: C:\Users\ASUS\webdesa-cipancur\admin\login.php");
+  header("Location: ../admin/login.php");
+  exit;
 }
-?>

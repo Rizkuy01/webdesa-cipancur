@@ -1,33 +1,56 @@
-<?php session_start(); include 'C:\xampppp\htdocs\webdesa-cipancur\config\db.php'; ?>
+<?php
+include '../config/db.php';
+
+// Proses update saat form disubmit
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+  foreach ($_POST['jumlah'] as $id => $nilai) {
+    $id = intval($id);
+    $nilai = intval($nilai);
+    mysqli_query($conn, "UPDATE dashboard_stats SET jumlah = $nilai WHERE id = $id");
+  }
+  header("Location: edit_dashboard.php?status=ok");
+  exit;
+}
+?>
+
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-  <title>Edit Profil Desa</title>
+  <meta charset="UTF-8">
+  <title>Edit Dashboard | Admin Desa</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <h2>Edit Profil Desa</h2>
-  <?php if (isset($_SESSION['msg'])): ?>
-    <p style="color: green;"><?= $_SESSION['msg']; unset($_SESSION['msg']); ?></p>
-  <?php endif; ?>
-  <form action="C:\xampppp\htdocs\webdesa-cipancur\proses\simpan_profil.php" method="POST" enctype="multipart/form-data">
-    <label>Kategori:</label>
-    <select name="kategori" required>
-      <option value="lokasi">Lokasi</option>
-      <option value="demografi">Demografi</option>
-      <option value="potensi">Potensi</option>
-      <option value="prestasi">Prestasi</option>
-    </select><br><br>
+<body class="bg-gray-100 font-sans">
+  <div class="max-w-3xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
+    <h1 class="text-2xl font-bold mb-6 text-blue-800">Edit Data Dashboard</h1>
 
-    <label>Judul:</label><br>
-    <input type="text" name="judul" required><br><br>
+    <?php if (isset($_GET['status']) && $_GET['status'] === 'ok'): ?>
+      <div class="bg-green-100 text-green-800 p-3 rounded mb-4">Data berhasil diperbarui!</div>
+    <?php endif; ?>
 
-    <label>Deskripsi:</label><br>
-    <textarea name="deskripsi" rows="5" cols="50" required></textarea><br><br>
+    <form method="post">
+      <div class="space-y-6">
+        <?php
+        $query = mysqli_query($conn, "SELECT * FROM dashboard_stats");
+        while ($row = mysqli_fetch_assoc($query)) :
+        ?>
+        <div class="flex justify-between items-center">
+          <label class="text-gray-700 font-medium"><?= htmlspecialchars($row['label']) ?></label>
+          <input type="number" name="jumlah[<?= $row['id'] ?>]" value="<?= $row['jumlah'] ?>" class="w-32 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+        </div>
+        <?php endwhile; ?>
+      </div>
 
-    <label>Upload Foto:</label><br>
-    <input type="file" name="foto"><br><br>
+      <div class="mt-8 text-right">
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-medium transition">
+          Simpan Perubahan
+        </button>
+      </div>
+    </form>
 
-    <button type="submit">Simpan</button>
-  </form>
+    <div class="mt-6">
+      <a href="dashboard.php" class="text-blue-500 hover:underline text-sm">&larr; Kembali ke Dashboard</a>
+    </div>
+  </div>
 </body>
 </html>
